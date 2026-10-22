@@ -70,7 +70,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Abbreviated alternative trash button text")
   String trashButton();
 
-  @DefaultMessage("My Projects")
+  @DefaultMessage("Kevin''s Cool Projects")
   @Description("Text on \"Projects\" button")
   String myProjectsButton();
 
@@ -479,7 +479,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Name of Projects tab")
   String projectsTabName();
 
-  @DefaultMessage("My projects")
+  @DefaultMessage("Kevin projects")
   @Description("Name of My projects menuitem")
   String projectMenuItem();
 
@@ -487,7 +487,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the menu item for creating a new project")
   String newProjectMenuItem();
 
-  @DefaultMessage("New project")
+  @DefaultMessage("Create a new project")
   @Description("Label of the menu item for creating a new project")
   String newProjectButton();
 
@@ -716,7 +716,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String generateYailMenuItem();
 
   //Help
-  @DefaultMessage("Help")
+  @DefaultMessage("Help (Kevin)")
   @Description("Label for the Help menu")
   String helpTabName();
 
@@ -871,7 +871,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
 
   //Tabs
-  @DefaultMessage("My Projects")
+  @DefaultMessage("Kevin Projects")
   @Description("Name of My Projects tab")
   String myProjectsTabName();
 

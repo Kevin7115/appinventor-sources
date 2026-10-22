@@ -64,7 +64,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_NEW_LAYOUT = "NewLayout";
   private static final String WIDGET_NAME_OLD_LAYOUT = "OldLayout";
   private static final String WIDGET_NAME_DARK_THEME_ENABLED = "DarkThemeEnabled";
-  private static final String WIDGET_NAME_HELP = "Help";
+  private static final String WIDGET_NAME_HELP = "Kevin's Help";
   private static final String WIDGET_NAME_ABOUT = "About";
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
   private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
