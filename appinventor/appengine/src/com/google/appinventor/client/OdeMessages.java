@@ -720,7 +720,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String generateYailMenuItem();
 
   //Help
-  @DefaultMessage("Help")
+  @DefaultMessage("Help - Testing change")
   @Description("Label for the Help menu")
   String helpTabName();
 
