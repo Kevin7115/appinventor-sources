@@ -185,7 +185,7 @@ public abstract class CommonProjectService {
    * @param projectId project ID
    * @param directory path of the directory
    */
-  public long deleteFolder(String userId, long projectId, String directory) {
+  public void deleteFolder(String userId, long projectId, String directory) {
     // TODO(user) : This is also not efficient
     for (String fileId : storageIo.getProjectSourceFiles(userId, projectId)) {
       if (fileId.startsWith(directory)) {
@@ -193,7 +193,6 @@ public abstract class CommonProjectService {
         storageIo.removeSourceFilesFromProject(userId, projectId, false, fileId);
       }
     }
-    return storageIo.getProjectDateCreated(userId, projectId);
   }
 
   /**
@@ -383,15 +382,15 @@ public abstract class CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
-   * @param nonce -- random string used to find finished APK
    * @param target  build target (optional, implementation dependent)
    * @param secondBuildserver use second buildserver
    *
    * @param foriOS
    * @param forAppStore
-   * @return  build results
+   * @return  build results. On success, the extra field holds the nonce used to download the
+   *     build output without logging in.
    */
-  public abstract RpcResult build(User user, long projectId, String nonce, String target,
+  public abstract RpcResult build(User user, long projectId, String target,
       boolean secondBuildserver, boolean isAab, boolean foriOS, boolean forAppStore);
 
   /**

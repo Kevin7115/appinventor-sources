@@ -2,9 +2,8 @@ suite('Procedures', function() {
   let workspace;
 
   setup(function() {
-    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*readonly*/ false, /*rtl*/ false));
+    Blockly.common.setMainWorkspace(Blockly.BlocklyEditor.create(document.body, '', /*useDarkTheme*/ false, /*readonly*/ false, /*rtl*/ false));
     workspace = Blockly.common.getMainWorkspace();
-    Blockly.common.setSelected(null);
   });
 
   test('declared no-return procedure parameter in scope', function() {

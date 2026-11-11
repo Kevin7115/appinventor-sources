@@ -693,7 +693,7 @@ AI.Blockly.ContextMenuItems.registerEnableDisableAllBlocksOption = function() {
       let allBlocks = scope.workspace.getAllBlocks();
       try {
         Blockly.Events.setGroup(true);
-        allBlocks.forEach(block => block.setEnabled(true));
+        allBlocks.forEach(block => block.setDisabledReason(false, Blockly.constants.MANUALLY_DISABLED));
       } finally {
         Blockly.Events.setGroup(false);
       }
@@ -714,7 +714,7 @@ AI.Blockly.ContextMenuItems.registerEnableDisableAllBlocksOption = function() {
       let allBlocks = scope.workspace.getAllBlocks();
       try {
         Blockly.Events.setGroup(true);
-        allBlocks.forEach(block => block.setEnabled(false));
+        allBlocks.forEach(block => block.setDisabledReason(true, Blockly.constants.MANUALLY_DISABLED));
       } finally {
         Blockly.Events.setGroup(false);
       }
@@ -957,11 +957,12 @@ Blockly.BlocklyEditor['cssRegistered'] = false;
  * Create a new Blockly workspace but without initializing its DOM.
  * @param container The container that will host the Blockly workspace
  * @param formName The projectId_formName identifier used to name the workspace
+ * @param useDarkTheme Whether the Blocks workspace should use the dark theme
  * @param readOnly True if the workspace should be created read-only
  * @param rtl True if the workspace is using a right-to-left language
  * @returns {Blockly.WorkspaceSvg} A newly created workspace
  */
-Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
+Blockly.BlocklyEditor['create'] = function(container, formName, useDarkTheme, readOnly, rtl) {
   if (!Blockly.BlocklyEditor['cssRegistered']) {
     Blockly.BlocklyEditor['cssRegistered'] = true;
     try {
@@ -1008,6 +1009,7 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       menu: true,
     },
     renderer: 'geras2_renderer',
+    theme: useDarkTheme ? Blockly.Themes.darkTheme : Blockly.Themes.ClassicTheme
   };
   var workspace = Blockly.inject(container, options);
   AI.Blockly.multiselect = Multiselect;
@@ -1026,14 +1028,25 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
       slowBlockSpeed: .15
     }
   });
-  /*
-    Keyboard navigation -- needs to be fixed with multiselect
-  if (!AI.Blockly.navigationController) {
-    AI.Blockly.navigationController = new NavigationController();
-    AI.Blockly.navigationController.init();
-  }
-  AI.Blockly.navigationController.addWorkspace(workspace);
-  */
+  const registry = Blockly.ShortcutRegistry.registry;
+  const keyCodes = Blockly.utils.KeyCodes;
+  const shortcutKeyRemappings = [
+    {from: keyCodes.T, to: registry.createSerializedKey(keyCodes.T, [keyCodes.ALT])},
+    {from: keyCodes.C, to: registry.createSerializedKey(keyCodes.C, [keyCodes.ALT])},
+    {from: keyCodes.X, to: registry.createSerializedKey(keyCodes.X, [keyCodes.ALT])},
+    {from: keyCodes.M, to: registry.createSerializedKey(keyCodes.M, [keyCodes.ALT])},
+    {from: registry.createSerializedKey(keyCodes.M, [keyCodes.SHIFT]), to: registry.createSerializedKey(keyCodes.M, [keyCodes.ALT, keyCodes.SHIFT])},
+    {from: registry.createSerializedKey(keyCodes.D, [keyCodes.SHIFT]), to: registry.createSerializedKey(keyCodes.D, [keyCodes.ALT, keyCodes.SHIFT])},
+    {from: keyCodes.N, to: registry.createSerializedKey(keyCodes.N, [keyCodes.ALT])},
+    {from: keyCodes.B, to: registry.createSerializedKey(keyCodes.B, [keyCodes.ALT])},
+    {from: keyCodes.W, to: registry.createSerializedKey(keyCodes.W, [keyCodes.ALT])},
+  ];
+  shortcutKeyRemappings.forEach(shortcutKeyRemapping => {
+    registry.getShortcutNamesByKeyCode(shortcutKeyRemapping.from).forEach(shortcutName => {
+      registry.removeAllKeyMappings(shortcutName);
+      registry.addKeyMapping(shortcutKeyRemapping.to, shortcutName, true);
+    });
+  });
   Blockly.allWorkspaces[formName] = workspace;
   workspace.formName = formName;
   workspace.screenList_ = [];
@@ -1155,11 +1168,8 @@ Blockly.BlocklyEditor['create'] = function(container, formName, readOnly, rtl) {
  * @param {!Element|string} container
  * @param {!Blockly.WorkspaceSvg} workspace
  */
-AI.inject = function(container, workspace, isDarkMode=false) {
+AI.inject = function(container, workspace) {
   Blockly.common.setMainWorkspace(workspace);  // make workspace the 'active' workspace
-  if (isDarkMode) {
-    Blockly.common.getMainWorkspace().setTheme(Blockly.Themes.darkTheme);
-  }
   workspace.fireChangeListener(new AI.Events.ScreenSwitch(workspace.projectId, workspace.formName));
   var gridEnabled = top.BlocklyPanel_getGridEnabled && top.BlocklyPanel_getGridEnabled();
   var gridSnap = top.BlocklyPanel_getSnapEnabled && top.BlocklyPanel_getSnapEnabled();
@@ -1178,7 +1188,6 @@ AI.inject = function(container, workspace, isDarkMode=false) {
     workspace.notYetRendered = false;
     workspace.scrollCenter();
   }
-  //AI.Blockly.navigationController.enable(workspace);
 };
 
 // Preserve Blockly during Closure and GWT optimizations
@@ -1198,7 +1207,8 @@ top.document.addEventListener('mousedown', function(e) {
     var classes = target.classList;
     // Use 'contains' in case the elements gain extra classes in the future.
     if (classes.contains('blocklyWidgetDiv') || classes.contains('blocklySvg')
-        || classes.contains('gwt-TreeItem') || classes.contains('blocklyDropDownDiv')) {
+        || classes.contains('gwt-TreeItem') || classes.contains('blocklyDropDownDiv')
+        || classes.contains('blockly-ws-search')) {
       return;
     }
     target = target.parentElement;

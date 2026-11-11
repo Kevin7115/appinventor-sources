@@ -650,9 +650,13 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   @Description("Label of the button leading to Connect related cascade items")
   String connectTabName();
 
-  @DefaultMessage("AI Companion")
+  @DefaultMessage("App Inventor Companion")
   @Description("Message providing details about starting the wireless connection.")
   String AICompanionMenuItem();
+
+  @DefaultMessage("Test in Web")
+  @Description("Menu item for initiating browser emulator.")
+  String browserMenuItem();
 
   @DefaultMessage("Chromebook")
   @Description("Menu item for initiating a connection to the companion running on a Chromebook.")
@@ -716,7 +720,7 @@ public interface OdeMessages extends Messages, ComponentTranslations {
   String generateYailMenuItem();
 
   //Help
-  @DefaultMessage("Help (Kevin)")
+  @DefaultMessage("Help - Testing change")
   @Description("Label for the Help menu")
   String helpTabName();
 
@@ -5208,7 +5212,8 @@ public interface OdeMessages extends Messages, ComponentTranslations {
 
   @DefaultMessage("<p><b>We detected errors while reading in your project</b></p>" +
                 "<p>To protect your project from damage, we have ended this session. You may close this " +
-                "window.</p>")
+                "window.</p>" +
+                "<p>For more information see <a href=\"http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html#Corrupt\" target=\"_blank\">the Trouble Shooting Page</a></p>")
   @Description("")
   String corruptionDialogMessage();
 
@@ -5431,6 +5436,12 @@ public interface OdeMessages extends Messages, ComponentTranslations {
     "function into the indefinite future.")
   @Description("")
   String firebaseExperimentalWarning();
+
+  @DefaultMessage("This doesn''t look like a standard Firebase URL " +
+    "(usually ending in “firebaseio.com” or “firebasedatabase.app”).<br>" +
+    "If you''re using a custom backend, that''s fine. Otherwise, please check for typos.")
+  @Description("")
+  String firebaseUrlWarning();
 
   @DefaultMessage("ChatBot is an experimental feature " +
     "which may change in the future. It''s usage may be restricted, " +

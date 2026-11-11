@@ -102,7 +102,7 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#deleteFolder(String, long, String)
    */
-  void deleteFolder(String sessionId, long projectId, String directory, AsyncCallback<Long> callback);
+  void deleteFolder(String sessionId, long projectId, String directory, AsyncCallback<Void> callback);
 
   /**
    * @see ProjectService#load(long, String)
@@ -164,9 +164,9 @@ public interface ProjectServiceAsync {
     AsyncCallback<RpcResult> callback);
 
   /**
-   * @see ProjectService#build(long, String, String, boolean)
+   * @see ProjectService#build(long, String, boolean, boolean, boolean, boolean)
    */
-  void build(long projectId, String nonce, String target, boolean secondBuildserver, boolean isAab,
+  void build(long projectId, String target, boolean secondBuildserver, boolean isAab,
       boolean foriOS, boolean forAppStore, AsyncCallback<RpcResult> callback);
 
   /**

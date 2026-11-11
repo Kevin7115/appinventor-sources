@@ -16,8 +16,9 @@ import java.util.List;
 public class Config implements IsSerializable, Serializable {
   // Unique identifier for the user
   private User user;
-
   private String rendezvousServer = null;
+  private String sysUID;        // Unique ID of this sytem (computed)
+  private String authCode;        // Associated verification MAC
 
   private SplashConfig splashConfig;
 
@@ -48,6 +49,7 @@ public class Config implements IsSerializable, Serializable {
   private String iosExtensions;
   private String surveyUrl;
   private boolean iosBuildServer;
+  private String webEmulatorUrl;
 
   public Config() {
   }
@@ -66,6 +68,22 @@ public class Config implements IsSerializable, Serializable {
 
   public void setRendezvousServer(String value) {
     this.rendezvousServer = value;
+  }
+
+  public String getSysUID () {
+    return this.sysUID;
+  }
+
+  public void setSysUID(String value) {
+    this.sysUID = value;
+  }
+
+  public String getAuthCode() {
+    return this.authCode;
+  }
+
+  public void setAuthCode(String value) {
+    this.authCode = value;
   }
 
   public SplashConfig getSplashConfig() {
@@ -274,5 +292,13 @@ public class Config implements IsSerializable, Serializable {
 
   public void setiOSBuildServer(boolean value) {
     iosBuildServer = value;
+  }
+
+  public String getWebEmulatorUrl() {
+    return webEmulatorUrl;
+  }
+
+  public void setWebEmulatorUrl(String value) {
+    webEmulatorUrl = value;
   }
 }

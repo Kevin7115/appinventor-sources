@@ -20,6 +20,7 @@ import com.google.appinventor.client.settings.user.BlocksSettings;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Promise;
 import com.google.appinventor.client.utils.Promise.WrappedException;
+import com.google.appinventor.client.widgets.DialogBox;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -35,11 +36,9 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -108,6 +107,10 @@ public class BlocklyPanel extends HTMLPanel {
   // My entity name
   private final String formName;
 
+  private final String projectId;
+
+  private final boolean readOnly;
+
   /**
    * Objects registered to listen for workspace changes.
    */
@@ -140,22 +143,9 @@ public class BlocklyPanel extends HTMLPanel {
     getElement().addClassName("svg");
     getElement().setId(formName);
     this.formName = formName;
+    this.projectId = formName.split("_")[0];
+    this.readOnly = readOnly;
     this.targetPlatform = targetPlatform;
-    String projectId = formName.split("_")[0];
-
-    /* Blockly initialization now occurs in three stages. This is due to the fact that certain
-     * Blockly objects rely on SVG methods such as getScreenCTM(), which are not properly
-     * initialized and/or null prior to the svg element being attached to the DOM. The first
-     * stage of initialization happens here.
-     *
-     * Stages 2 and 3 can occur in different orders depending on network latency. On a fast
-     * connection, the second stage will be loading of the .bky content into the workspace.
-     * The third stage will then be rendering of the workspace when the user switches to the
-     * Blocks editor. On slow connections, the workspace may render blank until the blocks file
-     * has been downloaded from the server.
-     */
-    initWorkspace(projectId, readOnly, LocaleInfo.getCurrentLocale().isRTL(), targetPlatform.getTarget());
-
     LOG.info("Created BlocklyPanel for " + formName);
   }
 
@@ -296,9 +286,9 @@ public class BlocklyPanel extends HTMLPanel {
       this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace;
   }-*/;
 
-  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) { // Start the Repl
+  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb, String forBrowser) { // Start the Repl
     makeActive();
-    doStartRepl(alreadyRunning, forChromebook, forEmulator, forUsb);
+    doStartRepl(alreadyRunning, forChromebook, forEmulator, forUsb, forBrowser);
   }
 
   public void hardReset() {
@@ -411,9 +401,11 @@ public class BlocklyPanel extends HTMLPanel {
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
-    VerticalPanel DialogBoxContents = new VerticalPanel();
+    FlowPanel DialogBoxContents = new FlowPanel();
+    DialogBoxContents.setStyleName("ode-VerticalLayout");
     HTML message = new HTML(mess);
-    HorizontalPanel holder = new HorizontalPanel();
+    FlowPanel holder = new FlowPanel();
+    holder.setStyleName("ode-HorizontalLayout");
     if (buttonName != null) {           // If buttonName and cancelButtonName are null
       Button ok = new Button(buttonName); // We won't have any buttons and other
       if (destructive) {
@@ -469,7 +461,7 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static void SetDialogContent(DialogBox dialog, String mess) {
-    HTML html = (HTML) ((VerticalPanel) dialog.getWidget()).getWidget(0);
+    HTML html = (HTML) ((FlowPanel) dialog.getWidget()).getWidget(0);
     html.setHTML(mess);
   }
 
@@ -685,9 +677,9 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.BlocklyPanel_createDialog =
         $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::createDialog(*));
     $wnd.BlocklyPanel_hideDialog =
-        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::HideDialog(Lcom/google/gwt/user/client/ui/DialogBox;));
+        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::HideDialog(Lcom/google/appinventor/client/widgets/DialogBox;));
     $wnd.BlocklyPanel_setDialogContent =
-        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::SetDialogContent(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;));
+        $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::SetDialogContent(Lcom/google/appinventor/client/widgets/DialogBox;Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInstanceTypeName =
         $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getComponentInstanceTypeName(Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentInstancePropertyValue =
@@ -722,12 +714,30 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.blocks.BlocklyPanel::getComponentContainerUuid(*));
   }-*/;
 
-  private native void initWorkspace(String projectId, boolean readOnly, boolean rtl, String targetLang)/*-{
+  /* Blockly initialization now occurs in three stages. This is due to the fact that certain
+   * Blockly objects rely on SVG methods such as getScreenCTM(), which are not properly
+   * initialized and/or null prior to the svg element being attached to the DOM. The first
+   * stage of initialization happens here.
+   *
+   * Stages 2 and 3 can occur in different orders depending on network latency. On a fast
+   * connection, the second stage will be loading of the .bky content into the workspace.
+   * The third stage will then be rendering of the workspace when the user switches to the
+   * Blocks editor. On slow connections, the workspace may render blank until the blocks file
+   * has been downloaded from the server.
+   */
+  public void initWorkspace() {
+    initWorkspace(Ode.getUserDarkThemeEnabled(), LocaleInfo.getCurrentLocale().isRTL(), targetPlatform.getTarget());
+    LOG.info("Initialized Blockly workspace for " + formName);
+  }
+
+  private native void initWorkspace(boolean isDarkMode, boolean rtl, String targetLang)/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
     var workspace = $wnd.Blockly.BlocklyEditor.create(el,
       this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::formName,
-      readOnly, rtl, targetLang);
-    workspace.projectId = projectId;
+      isDarkMode,
+      this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::readOnly,
+      rtl, targetLang);
+    workspace.projectId = this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::projectId;
     var cb = $entry(this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspaceChanged(Lcom/google/gwt/core/client/JavaScriptObject;));
     cb = cb.bind(this);
     workspace.addChangeListener(function(e) {
@@ -755,9 +765,9 @@ public class BlocklyPanel extends HTMLPanel {
   /**
    * Inject the workspace into the &lt;div&gt; element with specific mode
    */
-  native void injectWorkspace(boolean isDarkMode)/*-{
+  native void injectWorkspace()/*-{
     var el = this.@com.google.gwt.user.client.ui.UIObject::getElement()();
-    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace, isDarkMode);
+    $wnd.AI.inject(el, this.@com.google.appinventor.client.editor.blocks.BlocklyPanel::workspace);
   }-*/;
 
   /**
@@ -1005,8 +1015,8 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }-*/;
 
-  public native void doStartRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) /*-{
-    $wnd.Blockly.ReplMgr.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb);
+  public native void doStartRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb, String forBrowser) /*-{
+    $wnd.Blockly.ReplMgr.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb, forBrowser);
   }-*/;
 
   public native void doHardReset() /*-{

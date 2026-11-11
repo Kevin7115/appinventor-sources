@@ -12,6 +12,7 @@
   <ui:with field="messages" type="com.google.appinventor.client.OdeMessages"/>
   <ui:with field="hasWriteAccess" type="java.lang.Boolean"/>
   <ui:with field="isAvailable" type="java.lang.Boolean"/>
+  <ui:with field="webEmulatorEnabled" type="java.lang.Boolean"/>
 
   <ai:Toolbar styleName="ode-TopToolbar">
     <!-- Projects Menu -->
@@ -60,16 +61,21 @@
       <ai:DropDownItem name="Wireless" caption="{messages.AICompanionMenuItem}">
         <yaactions:WirelessAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="Emulator" caption="{messages.emulatorMenuItem}">
-        <yaactions:EmulatorAction/>
-      </ai:DropDownItem>
-      <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}">
-        <yaactions:UsbAction/>
+      <ai:DropDownItem name ="Browser" caption="{messages.browserMenuItem}"
+                       beta="true" visible="{webEmulatorEnabled}">
+        <yaactions:BrowserAction/>
       </ai:DropDownItem>
       <ai:DropDownItem name="Chromebook" caption="{messages.chromebookMenuItem}"
                        dependentStyleName="needsChromebook">
         <yaactions:ChromebookAction/>
       </ai:DropDownItem>
+      <ai:DropDownItem name="Usb" caption="{messages.usbMenuItem}" dependentStyleName="needsAiStarter">
+        <yaactions:UsbAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="Emulator" caption="{messages.emulatorMenuItem}" dependentStyleName="needsAiStarter">
+        <yaactions:EmulatorAction/>
+      </ai:DropDownItem>
+      <hr/>
       <ai:DropDownItem name="RefreshCompanion" caption="{messages.refreshCompanionMenuItem}">
         <yaactions:RefreshCompanionAction/>
       </ai:DropDownItem>
@@ -79,14 +85,16 @@
       <ai:DropDownItem name="Reset" caption="{messages.resetConnectionsMenuItem}">
         <yaactions:ResetAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="HardReset" caption="{messages.hardResetConnectionsMenuItem}">
-        <yaactions:HardResetAction/>
-      </ai:DropDownItem>
+      <hr/>
       <ai:DropDownItem name="CompanionInformation" caption="{messages.companionInformation}">
         <actions:AboutCompanionAction/>
       </ai:DropDownItem>
-      <ai:DropDownItem name="CompanionUpdate" caption="{messages.companionUpdate}">
+      <ai:DropDownItem name="Emulator services" caption="Emulator Services" />
+      <ai:DropDownItem name="CompanionUpdate" caption="&#160;&#160;&#160;{messages.companionUpdate}">
         <actions:CompanionUpdateAction/>
+      </ai:DropDownItem>
+      <ai:DropDownItem name="HardReset" caption="&#160;&#160;&#160;{messages.hardResetConnectionsMenuItem}">
+        <yaactions:HardResetAction/>
       </ai:DropDownItem>
     </ai:DropDownButton>
 

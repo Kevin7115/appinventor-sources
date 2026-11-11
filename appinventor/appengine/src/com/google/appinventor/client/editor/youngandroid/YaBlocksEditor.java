@@ -75,7 +75,10 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
     super(projectEditor, blocksNode, YaVersion.YOUNG_ANDROID_VERSION, YAIL,
         BlocksCodeGenerationTarget.YAIL,
         SimpleComponentDatabase.getInstance(blocksNode.getProjectId()));
+  }
 
+  @Override
+  protected void onWorkspaceInitialized() {
     project = Ode.getInstance().getProjectManager().getProject(blocksNode.getProjectId());
     project.addProjectChangeListener(this);
     onProjectLoaded(project);
@@ -238,9 +241,9 @@ public final class YaBlocksEditor extends BlocksEditor<YoungAndroidBlocksNode, Y
    * Start up the Repl (call into the Blockly.ReplMgr via the BlocklyPanel.
    */
   @Override
-  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb) {
+  public void startRepl(boolean alreadyRunning, boolean forChromebook, boolean forEmulator, boolean forUsb, String forBrowser) {
     blocksArea.setActiveFormWorkspace();
-    blocksArea.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb);
+    blocksArea.startRepl(alreadyRunning, forChromebook, forEmulator, forUsb, forBrowser);
   }
 
   /*

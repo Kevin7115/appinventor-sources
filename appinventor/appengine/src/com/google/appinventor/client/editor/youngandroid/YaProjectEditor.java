@@ -249,12 +249,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
 
   public void addBlocksEditor(BlocksEditor<?, ?> editor) {
     String formName = editor.getEntityName();
-    int pos = Collections.binarySearch(fileIds, editor.getFileId(),
-        getFileIdComparator());
-    if (pos < 0) {
-      pos = -pos - 1;
-    }
-    insertFileEditor(editor, pos);
+    openFileEditor(editor);
     if (isLastOpened(formName)) {
       screen1BlocksLoaded = true;
       if (readyToShowScreen1()) {
@@ -574,6 +569,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
           pos = -pos - 1;
         }
         insertFileEditor(newDesigner, pos);
+        openFileEditor(newDesigner);
         if (isLastOpened(entityName)) {
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
@@ -619,6 +615,12 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editorMap.put(entityName, editors);
     }
     addFileEditorByType(newBlocksEditor);
+    int pos = Collections.binarySearch(fileIds, newBlocksEditor.getFileId(),
+        getFileIdComparator());
+    if (pos < 0) {
+      pos = -pos - 1;
+    }
+    insertFileEditor(newBlocksEditor, pos);
   }
 
   private void removeFormEditor(String formName) {
@@ -776,19 +778,19 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       }
       final String directory = componentsFolder.getFileId() + "/" + typeName + "/";
       ode.getProjectService().deleteFolder(ode.getSessionId(), this.projectId, directory,
-          new AsyncCallback<Long>() {
+          new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable throwable) {
 
             }
 
             @Override
-            public void onSuccess(Long date) {
+            public void onSuccess(Void result) {
               Iterable<ProjectNode> nodes = componentsFolder.getChildren();
               for (ProjectNode node : nodes) {
                 if (node.getFileId().startsWith(directory)) {
                   ode.getProjectManager().getProject(node).deleteNode(node);
-                  ode.updateModificationDate(node.getProjectId(), date);
+                  ode.updateModificationDate(node.getProjectId(), System.currentTimeMillis());
                 }
               }
               // Change in extensions requires companion refresh

@@ -13,6 +13,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeListener;
 import com.google.appinventor.client.explorer.project.ProjectNodeContextMenu;
+import com.google.appinventor.client.utils.TableAccessibility;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -34,12 +35,12 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Logger;
 
 /**
@@ -53,7 +54,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
   // The asset "list" is represented as a tree and follows the same GWT conventions.
   private Tree assetList;
-  private final VerticalPanel panel;
+  private final FlowPanel panel;
 
   private long projectId;
   private Project project;
@@ -70,8 +71,8 @@ public class AssetList extends Composite implements ProjectChangeListener {
     assetList.setWidth("100%");
     assetList.addStyleName("ode-AssetTree");
 
-    panel = new VerticalPanel();
-    panel.setWidth("100%");
+    panel = new FlowPanel();
+    panel.setStyleName("ode-AssetList");
 
     TextButton addButton = new TextButton(MESSAGES.addButton());
     addButton.addClickHandler(new ClickHandler() {
@@ -89,7 +90,6 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
     panel.add(buttonPanel);
     panel.add(assetList);
-    panel.setCellHorizontalAlignment(buttonPanel, VerticalPanel.ALIGN_CENTER);
 
     initWidget(panel);
 
@@ -162,6 +162,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
         assetList.addItem(treeItem);
       }
     }
+    TableAccessibility.setLayoutTables(assetList);
   }
 
   public void refreshAssetList(long projectId) {
